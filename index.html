@@ -1,0 +1,163 @@
+<html>
+
+<body>
+    <table border="1" cellspacing="0" cellpadding="5" align="center" style="background-color:linen;">
+        <tr>
+            <input type="hidden" id="u_id">
+        </tr>
+        <tr>
+            <td>
+                <input type="text" placeholder="add data" id="name">
+            </td>
+            <td>
+                <input type="button" id="add" value="+" onclick="save()" style="background-color: rgb(248, 218, 187);">
+                <input type="button" id="edit" value="edit" onclick="save()"
+                    style="background-color: rgb(248, 218, 187);">
+            </td>
+        </tr>
+    </table>
+    <br><br>
+
+
+
+    <table border="1" cellspacing="0" cellpadding="5" align="center" style="background-color:linen;">
+        <tr>
+            <td>NAME</td>
+            <td>ACTION</td>
+        </tr>
+
+        <tbody id="record">
+
+        </tbody>
+        <tfoot>
+            <tr align="center">
+                <td colspan="2">
+                    <input type="button" onclick="cleardata()" id="clear" value="cleardata"
+                        style="background-color: rgb(248, 218, 187);">
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script type="text/javascript">
+
+        let data = [];
+        const viewData = () => {
+
+            let val = JSON.parse(localStorage.getItem('user')) == null ? [] : JSON.parse(localStorage.getItem('user'));
+            let tbl = " ";
+            val.map((v) => {
+                const { userid, name } = v;
+                tbl +=
+                    `
+                <tr>
+                    <td>${name}</td>
+                    <td>
+                        <button onclick="deleteData(${userid})">DELETE</button>
+                        <button onclick="editData(${userid})">EDIT</button>
+                    </td>
+                </tr>
+            `
+            });
+            document.getElementById('record').innerHTML = tbl;
+        }
+        viewData();
+
+
+
+        const save = () => {
+
+            document.getElementById('edit').style.display = "none";
+            document.getElementById('add').style.display = "block";
+
+            let userid = document.getElementById('u_id').value;
+            let name = document.getElementById('name').value;
+
+            let obj = {
+                userid: Math.floor(Math.random() * 10000),
+                name: name,
+            }
+
+
+            if (userid) {
+                let data = JSON.parse(localStorage.getItem('user'));
+                for (var i in data) {
+                    if (data[i].userid == userid) {
+                        data[i].name = name;
+                    }
+                }
+
+                localStorage.setItem('user', JSON.stringify(data));
+                alert("User Sucessfully Updated");
+                viewData();
+                document.getElementById('u_id').value = "";
+            }
+            else {
+                if (localStorage.getItem('user') === null || localStorage.getItem('user') === undefined) {
+                    data.push(obj);
+                    localStorage.setItem('user', JSON.stringify(data));
+                }
+                else {
+                    let val = JSON.parse(localStorage.getItem('user'));
+                    val.push(obj);
+                    localStorage.setItem('user', JSON.stringify(val));
+                }
+                alert("User Sucessfully Creaated");
+                viewData();
+                document.getElementById('u_id').value = "";
+            }
+
+            document.getElementById('name').value = "";
+        }
+
+
+
+        const deleteData = (id) => {
+            let data = JSON.parse(localStorage.getItem('user'));
+            let ans = data.filter((val) => {
+                return val.userid != id;
+            });
+
+            localStorage.setItem('user', JSON.stringify(ans));
+            alert("User Sucessfully Deleted");
+            viewData();
+
+        };
+
+
+
+        const editData = (id) => {
+           
+            document.getElementById('edit').style.display = "block";
+            document.getElementById('add').style.display = "none";
+
+            let data = JSON.parse(localStorage.getItem('user'));
+
+            let ans = data.filter((v) => {
+                return v.userid == id;
+            });
+
+            document.getElementById('u_id').value = ans[0].userid;
+            document.getElementById('name').value = ans[0].name;
+            viewData();
+        }
+
+
+
+        const cleardata = () => {
+            let data = JSON.parse(localStorage.getItem('user'));
+
+            let ans = data.filter((val) => {
+                return val.name.value = "";
+            });
+
+            localStorage.setItem('user', JSON.stringify(ans));
+            alert("All Users Sucessfully Deleted");
+            viewData();
+
+        }
+
+    </script>
+</body>
+
+</html>
